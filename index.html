@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cardápio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2d7a5b" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #f5f5fa;
+      --card: #ffffff;
+      --primary: #2d7a5b;
+      --primary-soft: #e1f2ea;
+      --border: #ddd;
+      --text-main: #222;
+      --text-muted: #666;
+      --danger: #c0392b;
+      --radius: 12px;
+      --base-font-size: 17px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { font-size: var(--base-font-size); }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    header {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      margin: 0;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .font-controls {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .font-controls span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .font-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 0.1rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      min-width: auto;
+      padding: 0.6rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-header h2 {
+      font-size: 1.3rem;
+      margin: 0;
+    }
+
+    .badge {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid var(--primary);
+      padding: 0.4rem 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #fff;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn.danger {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .btn.sm {
+      padding: 0.25rem 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .btn + .btn { margin-left: 0.5rem; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    select, input[type="text"], textarea, input[type="number"], input[type="url"] {
+      width: 100%;
+      padding: 0.5rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    label {
+      display: block;
+      font-size: 0.95rem;
+      margin: 0.35rem 0 0.15rem;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .field-row > div {
+      flex: 1 1 140px;
+    }
+
+    .recipes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .recipe-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.7rem;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .recipe-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .recipe-photo {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .recipe-main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .recipe-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      word-wrap: break-word;
+    }
+
+    .recipe-meta {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .recipe-link-inline {
+      margin-top: 0.2rem;
+      font-size: 0.9rem;
+    }
+
+    .recipe-link-inline a {
+      text-decoration: underline;
+    }
+
+    .recipe-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      justify-content: flex-end;
+    }
+
+    .recipe-actions .btn.sm {
+      min-width: 2rem;
+      text-align: center;
+      padding-inline: 0.5rem;
+    }
+
+    .recipe-details {
+      margin-top: 0.4rem;
+      border-top: 1px dashed var(--border);
+      padding-top: 0.4rem;
+    }
+
+    .recipe-details ul {
+      margin: 0.25rem 0 0.4rem;
+      padding-left: 1.1rem;
+      font-size: 0.95rem;
+    }
+
+    .section-title {
+      font-weight: 600;
+      margin: 0.6rem 0 0.25rem;
+      font-size: 1rem;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .week-block { margin-top: 0.6rem; }
+
+    .week-list {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .week-list ul {
+      margin: 0.2rem 0 0.4rem;
+      padding-left: 1.1rem;
+    }
+
+    .week-list li {
+      margin-bottom: 0.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .search-input { margin-bottom: 0.4rem; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 500px;
+      width: calc(100% - 2rem);
+      padding: 1rem;
+      max-height: 80vh;
+      overflow: auto;
+    }
+
+    .modal h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .modal-content { margin-bottom: 0.75rem; }
+    .modal-actions { text-align: right; }
+
+    .recipe-checkbox-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .recipe-checkbox-list li {
+      margin-bottom: 0.3rem;
+      font-size: 0.95rem;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* LISTA DE COMPRAS */
+    #shoppingListContainer {
+      font-size: 0.95rem;
+    }
+
+    .shopping-recipe-block {
+      border-top: 1px solid var(--border);
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .shopping-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .shopping-header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .shopping-recipe-block ul {
+      margin: 0.2rem 0 0.4rem;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .shopping-recipe-block li {
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .shopping-recipe-block label {
+      margin: 0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .shopping-recipe-block span[contenteditable="true"] {
+      outline: none;
+      border-radius: 4px;
+      padding: 0 2px;
+      min-width: 40px;
+    }
+
+    .shopping-recipe-block .btn.sm {
+      padding-inline: 0.4rem;
+      min-width: 2rem;
+    }
+
+    #photoOverlay .modal {
+      max-width: 90vw;
+      max-height: 90vh;
+      padding: 0.5rem;
+    }
+
+    #photoOverlayImg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.4rem; }
+      .card-header h2 { font-size: 1.15rem; }
+      .recipe-name { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Cardápio</h1>
+      <p>Organize receitas, dias e lista de compras de forma simples, com opções de almoço, jantar, lanches e petiscos com vinho.</p>
+      <div class="font-controls">
+        <span>Tamanho da letra:</span>
+        <button class="font-btn" id="btnFontDown">A−</button>
+        <button class="font-btn" id="btnFontUp">A+</button>
+      </div>
+            <div style="margin-top:0.5rem; display:flex; flex-wrap:wrap; gap:0.5rem;">
+        <button class="btn sm" id="btnBackupExport">💾 Salvar backup</button>
+        <button class="btn sm" id="btnBackupImport">📥 Restaurar backup</button>
+        <input type="file" id="backupFileInput" accept="application/json" style="display:none;" />
+      </div>
+
+    </header>
+    
+    
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tabReceitas">📖 Receitas</button>
+      <button class="tab-btn" data-tab="tabSemana">📅 Dia</button>
+      <button class="tab-btn" data-tab="tabCompras">🛒 Lista de compras</button>
+    </div>
+
+    <!-- TAB RECEITAS -->
+    <section id="tabReceitas" class="tab-panel active">
+      <div class="card">
+        <div class="card-header">
+          <h2>Receitas</h2>
+          <button class="btn primary" id="btnNovaReceita">➕ Nova receita</button>
+        </div>
+
+        <div class="search-input">
+          <label for="recipeSearch">Buscar receita</label>
+          <input type="text" id="recipeSearch" placeholder="Digite parte do nome, ingrediente, preparo ou link" />
+        </div>
+
+        <div class="filter-row">
+          <select id="filterFav">
+            <option value="">Todas</option>
+            <option value="salgado">Salgados</option>
+            <option value="doce">Doces</option>
+            <option value="fav">Favoritas</option>
+          </select>
+        </div>
+
+        <div id="recipesList" class="recipes-list"></div>
+      </div>
+
+      <div class="card" id="recipeFormCard" style="display:none;">
+        <div class="card-header">
+          <h2 id="recipeFormTitle">Nova receita</h2>
+        </div>
+        <form id="recipeForm">
+          <label for="recipeName">Nome da receita</label>
+          <input type="text" id="recipeName" required />
+
+          <div class="field-row">
+            <div>
+              <label for="recipeKind">Tipo</label>
+              <select id="recipeKind" required>
+                <option value="salgado">Salgado</option>
+                <option value="doce">Doce</option>
+              </select>
+            </div>
+            <div>
+              <label for="recipeWork">Nível de trabalho</label>
+              <select id="recipeWork" required>
+                <option value="leve">🟢 Leve</option>
+                <option value="medio">🟡 Médio</option>
+                <option value="pesado">🔴 Elaborado</option>
+              </select>
+            </div>
+            <div>
+              <label for="recipeServings">Porções (pessoas)</label>
+              <input type="number" id="recipeServings" min="1" max="100" value="3" />
+            </div>
+          </div>
+
+          <label for="recipeIngredients">Ingredientes (opcional)<br>
+            <span class="small">Um por linha (ex.: "500 g de frango", "2 tomates"...)</span>
+          </label>
+          <textarea id="recipeIngredients"></textarea>
+
+          <label for="recipeInstructions">Modo de preparo (opcional)</label>
+          <textarea id="recipeInstructions"></textarea>
+
+          <label for="recipeLink">Link da receita (opcional)</label>
+          <input type="url" id="recipeLink" placeholder="youtube.com/..." />
+
+          <label for="recipePhoto">Foto (opcional)</label>
+          <input type="file" id="recipePhoto" accept="image/*" />
+
+          <div style="margin-top:0.75rem; text-align:right;">
+            <button type="button" class="btn" id="btnCancelarReceita">Cancelar</button>
+            <button type="submit" class="btn primary">Salvar receita</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB DIA -->
+    <section id="tabSemana" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>Opções do dia</h2>
+          <span class="badge">Monte o cardápio de até 10 dias</span>
+        </div>
+
+<p class="small" id="diaIntroText">
+          Monte o cardápio dos dias (1 a 10) escolhendo o tipo de refeição e adicionando as receitas.
+          Você também pode visualizar tudo em formato de calendário.
+        </p>
+
+        <div style="margin-bottom:0.5rem;">
+          <button class="btn sm" id="btnVerCalendario">📆 Ver em calendário semanal</button>
+        </div>
+
+        <p class="small">
+          Opções do dia: monte o cardápio dos 10 dias (almoço, jantar, lanches e petiscos).
+          Escolha o tipo de refeição que está montando; todas as opções do dia aparecem abaixo.
+        </p>
+
+        <div class="toolbar">
+          <div style="min-width:140px;">
+            <label for="weekSelect" class="small">Dia</label>
+            <select id="weekSelect">
+              <option value="0">Dia 1</option>
+              <option value="1">Dia 2</option>
+              <option value="2">Dia 3</option>
+              <option value="3">Dia 4</option>
+              <option value="4">Dia 5</option>
+              <option value="5">Dia 6</option>
+              <option value="6">Dia 7</option>
+              <option value="7">Dia 8</option>
+              <option value="8">Dia 9</option>
+              <option value="9">Dia 10</option>
+            </select>
+          </div>
+          <div style="min-width:180px;">
+            <label for="mealSelect" class="small">Tipo de refeição em edição</label>
+            <select id="mealSelect">
+              <option value="almoco">🍛 Almoço</option>
+              <option value="jantar">🍽 Jantar</option>
+              <option value="lanche">☕ Lanches</option>
+              <option value="petisco">🍷 Petiscos com vinho</option>
+            </select>
+          </div>
+          <div style="min-width:180px;">
+            <label for="startWeekdaySelect" class="small">Dia 1 começa em</label>
+            <select id="startWeekdaySelect">
+              <option value="0">Segunda</option>
+              <option value="1">Terça</option>
+              <option value="2">Quarta</option>
+              <option value="3">Quinta</option>
+              <option value="4">Sexta</option>
+              <option value="5">Sábado</option>
+              <option value="6">Domingo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="week-block">
+          <div class="section-title" id="currentMealTitle">Opções do dia</div>
+          <div id="dayMealsContainer"></div>
+          <div style="margin-top:0.5rem; display:flex; flex-wrap:wrap; gap:0.5rem;">
+            <button class="btn sm" id="btnEditCurrentMeal">Adicionar receitas ao tipo selecionado</button>
+            <button class="btn sm danger" id="btnClearDay">Limpar tudo do dia</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    
+
+    <!-- TAB LISTA DE COMPRAS -->
+    <section id="tabCompras" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>Lista de compras</h2>
+          <span class="badge">Baseada em todas as receitas dos dias</span>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn primary" id="btnGerarLista">Gerar lista geral</button>
+          <button class="btn danger sm" id="btnClearShopping">Limpar tudo</button>
+        </div>
+
+        <p class="small">
+          A lista é separada por receita (e listas avulsas). Depois de gerar, você pode editar, excluir ou adicionar itens sem mexer na receita original.
+        </p>
+
+        <div id="shoppingListContainer"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL GENÉRICO -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+      <h2 id="modalTitle">Escolher receitas</h2>
+      <div class="modal-content" id="modalContent"></div>
+      <div class="modal-actions">
+        <button class="btn" id="modalCancel">Cancelar</button>
+        <button class="btn primary" id="modalSave">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FOTO -->
+  <div id="photoOverlay" class="modal-overlay">
+    <div class="modal">
+      <img id="photoOverlayImg" src="" alt="Foto da receita" />
+    </div>
+  </div>
+
+  <!-- MODAL: CALENDÁRIO DO CARDÁPIO -->
+  <div id="calendarOverlay" class="modal-overlay">
+    <div class="modal">
+      <h2>Calendário do cardápio</h2>
+      <div class="modal-content" id="calendarContent"></div>
+      <div class="modal-actions">
+        <button class="btn" id="calendarClose">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+ 
+
+
+<script>
+(function() {
+  const STORAGE_KEY = "cardapioMaeState_v7";
+  const FONT_KEY = "cardapioMaeFontSize";
+
+    
+
+
+  const WEEKDAYS_SHORT = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+
+  const INITIAL_RECIPES = [
+    {
+      id: null,
+      name: "Escondidinho de carne picada de peru",
+      kind: "salgado",
+      work: "medio",
+      servings: 0,
+      ingredients: [
+        "1 kg de batatas descascadas e cortadas em pedaços",
+        "2 colheres de sopa de manteiga",
+        "100 ml de leite (ou quanto baste)",
+        "Sal e noz-moscada a gosto",
+        "500 g de carne picada de peru",
+        "1 cebola média, picada",
+        "2 dentes de alho, picados",
+        "1 tomate maduro picado (ou 100 g de polpa de tomate)",
+        "1/2 pimento vermelho, picado (opcional)",
+        "2 colheres de sopa de azeite",
+        "1 colher de chá de colorau ou páprica doce",
+        "Sal e pimenta-do-reino a gosto",
+        "Salsa ou coentros frescos, picados (para finalizar)",
+        "150 g de queijo mozarela ralado (ou queijo da sua preferência)"
+      ],
+      instructions:
+`1) Cozinhe as batatas em água com uma pitada de sal até ficarem macias (cerca de 15–20 minutos). Escorra a água e amasse as batatas com um espremedor ou garfo. Adicione a manteiga e o leite aos poucos, mexendo até obter um purê cremoso. Tempere com sal e noz-moscada a gosto. Reserve.
+
+2) Numa frigideira grande, aqueça o azeite e refogue a cebola e o alho até ficarem macios. Junte a carne picada de peru e cozinhe até dourar. Adicione o tomate, o pimento (se for usar), o colorau, sal e pimenta. Cozinhe por mais cerca de 10 minutos, mexendo ocasionalmente, até o molho apurar. Finalize com salsa ou coentros picados.
+
+3) Pré-aqueça o forno a 200 °C. Numa travessa grande, espalhe uma camada uniforme de purê de batata no fundo. Adicione o recheio de carne por cima e cubra com o restante purê, alisando a superfície com uma espátula.
+
+4) Polvilhe o queijo ralado sobre o purê.
+
+5) Leve ao forno por cerca de 20 minutos, ou até o queijo derreter e dourar levemente.
+
+6) Retire do forno, deixe descansar por 5 minutos e sirva quente.`,
+      favorite: false,
+      photo: null,
+      link: "https://cookpad.com/pt/receitas/24346747"
+    },
+    
+    {
+  id: "r2",
+  name: "PÃO DE CEBOLA FOFINHO E SUPER FÁCIL DE FAZER",
+  ingredients: [
+    "grão de bico cru com pele",
+    "1 folha de louro",
+    "1 dente de alho",
+    "sal ",
+    "2 unidades ovos",
+"1 unidade grande cebola picada",
+"meia xícara de chá óleo",
+"2 colheres de chá sal",
+"6 xícaras de chá farinha de trigo",
+"1 xícara de chá leite morno",
+"2 tabletes fermento biológico",
+"1 unidade gema de ovo",
+"meia xícara de chá café coado",
+"orégano a gosto ",
+    
+  ],
+  
+  instructions: ``,
+  servings: 0,
+  type: "salgado",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://youtu.be/QLuoU5eTu58?si=Ilk4S1vM_g7zCIe6",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r3",
+  name: "CUCA DE BANANA COM FAROFA FITNESS",
+  ingredients: [
+    "# Farofa para Cobertura",
+"50 gramas de Farinha de aveia",
+"1/4 de xícara de Adoçante (usei Xilitol)",
+"1 colher (chá) de Canela",
+"2 colheres (sopa) de Óleo de coco",
+
+"# Bolo",
+"1 Ovo",
+"1/2 de xícara de Adoçante (usei Xilitol)",
+"1 colher (sopa) de Óleo de coco",
+"100 gramas de Farinha de aveia",
+"60 ml de Leite de coco",
+"1 colher (chá) de Fermento ",
+
+"2 bananas cortadas em tiras",
+
+"# Forma untada e enfarinhada com óleo de coco e farinha de aveia",
+    
+  ],
+  
+  instructions: ``,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://youtu.be/DlC4JaxkKjI?si=C0--QIRTlg0UvgC1",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r4",
+  name: "BOLO DE FUBÁ SIMPLES E RÁPIDO COM BANANA SEM GLÚTEN SEM LACTOSE",
+  ingredients: [
+      ],
+  
+  instructions: ``,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://youtu.be/gKsy_BjD0Vc?si=56Bi2m0BMun44990",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r5",
+  name: "BOLO DE FUBÁ CREMOSO DE LIQUIDIFICADOR",
+  ingredients: [
+    "4 ovos",
+    "2 colheres de sopa de margarina ou manteiga",
+    "4 xícaras de leite ( 240 ml cada / quase 1 litro )",
+    "3 xícaras de açúcar",
+    "1 xícara e 1/2 de fubá",
+    "2 colheres de sopa de trigo",
+    "1 colher de sopa de fermento químico para bolos",
+    "1 pacotinho de queijo ralado ( 100 gr )",
+    
+  ],
+  
+  instructions: ` As xícaras do vídeo são de 240 ml cada.
+  # Medidas da forma do vídeo:
+-36 cm de comprimento
+-26 cm de largura
+-05 cm de profundidade`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://youtu.be/vpT_id4h9Lg?si=f3WvNSk7UBJorqW1",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r6",
+  name: "Bolo de café com chocolate",
+  ingredients: [
+    "Bolo de chocolate (sem farinha)",
+"Chocolate Amargo 100g",
+"Manteiga 85g",
+"Cacau em pó 6g",
+"Açúcar 100g",
+"6 ovos",
+"Sal 1g",
+      ],
+  
+  instructions: `Asse em forno a 180 ° C por 10 a 12 min
+
+Creme de Chantilly de café com chocolate
+Chocolate Amargo 130g
+Leite 75g
+Grão de café 10g
+Chantilly 300g
+Açúcar 25g
+
+Raspas de chocolate decorativas`,
+  servings: 30,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://youtu.be/XFB1RGqrq1o?si=bv3XJnUrVykby3wy",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r7",
+  name: "Biscoito de coco vegano e sem glúten",
+  ingredients: [
+    "1/2 xícara (chá) de farinha de amêndoas",
+"1/2 xícara (chá) de coco ralado (sem açúcar)",
+"1/2 xícara (chá) de açúcar demerara",
+"1 xícara (chá) de farinha de arroz",
+"Até dar o ponto- água de coco (um pouco menos que 1/2 xícara).",
+    
+  ],
+  
+  instructions: `Misture bem os primeiros 4 ingredientes.
+Vá adicionando aos poucos a água de coco, enquanto mistura a massa com as mãos (amassando).
+Adicione até a massa estar perfeita para ser modelada, sem grudar nas mãos.
+Abra a massa com cuidado, com rolo ou manualmente (caso opte pelo rolo pode polvilhar mais um pouquinho de farinha de arroz) e corte os biscoitos com auxílio de um molde.
+Disponha os biscoitos em uma assadeira untada com óleo de coco e leve ao forno pré-aquecido a 180°C por 25/30 minutos (vá observando para não queimar as bordas).
+Espere esfriar e aproveite!`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://catracalivre.com.br/gastronomia/biscoito-de-coco-vegano-para-comer-com-aquele-cafezinho/",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r8",
+  name: "Broa de fubá sem trigo sem leite, derrete na boca fica uma delícia",
+  ingredients: [
+    "1 xícara de fubá ",
+"1 xícara de amido de milho ",
+"1 ovo",
+"2 colheres de sopa de manteiga derretida", 
+"1/2 xícara de açúcar demerara ",
+"1 colher de chá de fermento em pó ",
+
+  ],
+  
+  instructions: `Umas 3 colheres de sopa de leite de coco.
+( medida da xícara usada é de 200ML)
+(Tempo de forno 20 minutos a 180graus)`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://youtu.be/30VuwX-67Nk?si=JXAVDeeDTGuVeIYj",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r9",
+  name: "Bolo de maçã delicioso (e sem glúten) ",
+  ingredients: [
+    "Três maçãs",
+"150 gramas de pasta de tâmaras",
+"200 mililitros de água",
+"Uma colher de sopa de canela",
+"Uma chávena e meia de aveia",
+"Meia chávena de fubá de mandioca",
+"Três quartos de chávena de óleo de coco",
+"Quatro ovos",
+"Uma colher de chá de extrato de baunilha",
+"Uma laranja para sumo.",
+    
+  ],
+  
+  instructions: `Num tacho, coloque a pasta de tâmara, a água e a canela. Deixe cozer para amolecer um pouco a pasta e triture tudo. Retire do lume e reserve. Num processador, ou robot de cozinha, coloque os restantes ingredientes, exceto as maçãs, e triture muito bem.
+
+Corte as maçãs em fatias, coloque-as dentro do preparado de tâmaras e envolva-as bem. Numa forma untada com óleo de coco, verta metade da massa e coloque algumas das tiras de maça, adicione o resto da massa e, por fim, as últimas fatias de maça. Leve ao forno, pré-aquecido a 180 graus, durante cerca de uma hora.`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://www.nit.pt/fit/este-bolo-de-maca-delicioso-e-sem-gluten-prepara-se-em-10-minutos",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r10",
+  name: "Bolo cremoso de fubá",
+  ingredients: [
+   
+  ],
+  
+  instructions: ``,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://youtu.be/FdEBfu9P8MU?si=6q4k1Eh9hqMy8BuQ",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r11",
+  name: "Bolo Cremoso de Aipim",
+  ingredients: [
+    "1 kg de aipim (cru ralado)",
+    "3 ovos",
+    "200 ml de leite de coco",
+    "100 g de coco ralado em flocos",
+    "2 colheres (sopa) de açúcar",
+    "1 copo de requeijão cremoso",
+    
+  ],
+  
+  instructions: `Passo 1
+No liquidificador, bata o aipim picado com os ovos, a margarina, o leite de coco e o leite;
+Passo 2
+Coloque em uma tigela e misture o coco e o açúcar;
+Passo 3
+Asse em uma assadeira untada, até dourar.`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://comidinhasdochef.com/bolo-cremoso-de-aipim/",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r12",
+  name: "Bolo de Fubá uma receita de vó",
+  ingredients: [
+    "2 ovos",
+"2 xícaras (chá) de fubá",
+"1 colher (sopa) de fermento em pó",
+"1 xícara (chá) de farinha de trigo",
+"12 colheres (sopa) de margarina",
+"1/2 xícara (chá) de óleo",
+"2 xícaras (chá) de açúcar",
+"1 xícara (chá) de leite",
+"1 colher (sopa) de sementes de erva-doce",
+"# Margarina e farinha de trigo para untar",
+    
+  ],
+  
+  instructions: `Em uma tigela, misture todos os ingredientes, menos a erva-doce, até obter uma massa homogênea. Então, acrescente a erva-doce e mexa até incorporar.
+
+Em seguida, coloque em uma fôrma de buraco no meio de 24cm de diâmetro untada e enfarinhada.
+
+Então, leve ao forno médio, preaquecido, por 25 minutos ou até que ao enfiar um palito, ele saia limpo.`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://receitasdepesos.com.br/receitas/2020/07/10/bolo-de-fuba-uma-receita-de-vo-vem-ver/",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r13",
+  name: "Bolo de banana com aveia e sem farinha trigo",
+  ingredients: [
+    "4 bananas nanicas bem maduras (400g)",
+"2 ovos",
+"3 colheres (sopa) de manteiga derretida (36g)",
+"1/4 de xícara de açúcar (50g)",
+"1 xícara de aveia em flocos finos (135g)",
+"1 colher (sopa) fermento químico (15g)",
+"1/2 de colher (chá) de canela em pó (pode usar baunilha se preferir)",
+    
+  ],
+  
+  instructions: `1.Em um recipiente, amasse as bananas com um garfo até formar um creme;
+
+2.Junte agora os ovos e a manteiga derretida e bata muito bem até se formar um creme homogêneo;
+
+3.Agora junte o açúcar e misture até que ele se dissolva;
+
+4.Por fim adicione a aveia e o fermento e misture bem até que tudo se incorpore;
+
+5.Transfira a mistura para uma forma untada e enfarinhada (a que usei tem 18cm de diâmetro com furo central);
+
+6.Por cima adicione algumas bananas cortadas em rodelas e polvilhe tudo com um pouco de açúcar e canela (essa parte é opcional);
+
+7.Leve para assar em forno pré-aquecido à 180°C durante cerca de 30 minutos ou até que espetando seu bolo com um palito ele saia limpo;
+
+8.Se o palito sair levemente úmido, não se assuste, como esta massa leva bastante fruta, isso é normal;
+
+9.Depois disso é esperar esfriar para desenformar e servir;`,
+  servings: 10,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://catracalivre.com.br/gastronomia/bolo-de-banana-com-aveia-e-sem-farinha-trigo/",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r14",
+  name: "Bolo Monache (bolo de freiras)",
+  ingredients: [
+    "250 g de ricota",
+"3 ovos",
+"125 g de açúcar",
+"130 g de farinha de amêndoa",
+"1 colher de chá de raspas de limão",
+"1 colher de chá de extrato de baunilha",
+"2 colheres de sopa de licor (amaretto, rum ou licor de laranja)",
+"1 pitada de sal",
+"Açúcar de confeiteiro a gosto",
+   
+  ],
+  
+  instructions: `1. Peneire a ricota e deixe escorrer 12h na geladeira para remover o excesso de umidade;
+
+2. Bata os ovos e o açúcar em uma tigela até obter uma mistura espumosa e transparente. Adicione a ricota peneirada com movimentos de dobra para manter a aeração;
+
+3. Adicione a farinha de amêndoa, as raspas de limão e a pitada de sal misturando delicadamente. Em seguida, adicione o extrato de baunilha e o licor de sua preferência, misturando com uma espátula até que todos os ingredientes estejam bem homogêneos;
+
+4. Unte uma forma redonda com manteiga e polvilhe com farinha de amêndoas para evitar que o bolo grude. Despeje a mistura na forma, nivele a superfície e leve ao forno preaquecido a 170 °C por 35-40 minutos.
+
+5. Quando a superfície estiver dourada, teste com um palito. Se o palito sair limpo, o bolo está pronto. Retire o bolo do forno e deixe esfriar completamente antes de polvilhar com açúcar de confeiteiro.`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://www.tudogostoso.com.br/noticias/nem-farinha-nem-fermento-um-bolo-muito-fofo-feito-pelas-avos-italianas-e-sua-receita-centenaria-saiba-como-fazer-o-bolo-das-freiras-a19225.htm",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ {
+  id: "r15",
+  name: "Bolo Chocolate de Liquidificador",
+  ingredients: [
+   " Bolo",
+    "1 colher de sopa de essência de baunilha",
+"1 xícara de chá de chocolate em pó 50% cacau",
+"2 xícaras de chá de farinha de trigo tradicional sem fermento",
+"1 colher de sopa de fermento químico em pó",
+"3 ovos",
+"2 xícaras de chá de açúcar cristal",
+"4 colheres de sopa de manteiga/margarina derretida",
+"1 xícara de chá de leite integral levemente morno",
+"# Calda de Doce de Leite",
+"200 gramas de doce de leite a sua preferencia (estou utilizando lata de leite condensado cozida na panela de pressão)",
+"1 caixa de creme de leite (caixa com 200 gramas)",
+"# Cobertura de Alpino",
+
+"400 gramas de doce de leite da sua preferência",
+"100 gramas de creme de leite",
+"1/2 colher de sopa de essência de baunilha",
+"1 colher de sopa de chocolate em pó 50% cacau",
+"200 gramas de chocolate nobre meio amargo derretido",
+   
+  ],
+  
+  instructions: `PREPARO DO BOLO
+  Coloque todos os ingredientes em um liquidificador, exceto a farinha de trigo e o fermento, e liquidifique até homogeneizar.
+
+Então, despeje a mistura em um tigela e acrescente a farinha de trigo aos poucos sempre peneirando e misturando bem.
+
+Em seguida, finalize com o fermento apenas incorporando levemente até homogeneizar.
+
+Por fim, despeje em uma forna quadrada untada e polvilhada farinha de trigo/chocolate, em seguida leve em forno pré aquecido a 180ºC por aproximadamente 50 minutos ou até fazer o teste espetando um palito no centro do bolo, se o mesmo sair limpo e seco quer dizer que está pronto.
+
+PREPARO DA CALDA
+Coloque os ingredientes em um bowl (tigela) e misture até homogenizar.
+
+PREPARO DA COBERTURA
+Em seguida, coloque todos os ingredientes em uma batedeira ou tigela se não tiver batedeira, exceto o chocolate derretido e bata por aproximadamente 3 minutinhos até homogenizar e ficar bem cremosinho.
+Então, adicione o chocolate derretido e bata por mais 2 minutinhos até homogenizar.
+
+MONTAGEM
+
+Por fim, com um garfo ou espeto de churrasco, faça diversos furos por toda a massa do bolo ainda na fôrma.
+
+Em seguida, despeje a calda de doce de leite por cima e deixe penetrar a massa, em seguida despeje toda a cobertura de alpino e espalhe bem fazendo uma camada bem uniforme.
+
+Leve para geladeira por 3 horas e decore com granulados a gosto e é só servir seu bolo de chocolate molhadinho.`,
+  servings: 0,
+  type: "doce",      // "salgado" ou "doce"
+  image: "",            // se quiser colocar imagem base64 futuramente
+  link: "https://receitasdepesos.com.br/receitas/2020/12/19/esse-bolo-chocolate-de-liquidificador-molhadinho-e-muito-facil-de-fazer/",             // pode colocar link tipo "youtube.com/..."
+  favorite: false
+},
+ 
+
+  ];
+
+  let state = {
+    recipes: [],
+    weeklyPlans: [],
+    selectedWeekIndex: 0,
+    shoppingLists: {},
+    startWeekdayIndex: 0
+  };
+
+     // ==== BACKUP (EXPORTAR / IMPORTAR) ====
+  const btnBackupExport = document.getElementById("btnBackupExport");
+  const btnBackupImport = document.getElementById("btnBackupImport");
+  const backupFileInput = document.getElementById("backupFileInput");
+
+  function exportBackup() {
+    try {
+      // monta só os dados importantes
+      const data = {
+        recipes: state.recipes || [],
+        weeklyPlans: state.weeklyPlans || [],
+        selectedWeekIndex:
+          typeof state.selectedWeekIndex === "number" ? state.selectedWeekIndex : 0,
+        shoppingLists: state.shoppingLists || {},
+        startWeekdayIndex:
+          typeof state.startWeekdayIndex === "number" ? state.startWeekdayIndex : 0
+      };
+
+      const raw = JSON.stringify(data, null, 2);
+
+      // tenta baixar em arquivo .json
+      try {
+        if (window.Blob && window.URL && URL.createObjectURL) {
+          const blob = new Blob([raw], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "cardapio-backup.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+
+          // mensagem simples pra sua mãe
+          alert("Backup gerado! Procure pelo arquivo 'cardapio-backup.json' na pasta de downloads.");
+        } else {
+          // fallback bem raro: mostra o texto do backup
+          alert(
+            "Seu navegador não permite baixar o arquivo automaticamente.\n\n" +
+            "Copie o texto a seguir e salve em um arquivo chamado 'cardapio-backup.json':\n\n" +
+            raw
+          );
+        }
+      } catch (e) {
+        console.warn("Falha no download automático do backup:", e);
+        alert(
+          "Não foi possível baixar o arquivo automaticamente.\n\n" +
+          "Copie o texto a seguir e salve em um arquivo chamado 'cardapio-backup.json':\n\n" +
+          raw
+        );
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao gerar o backup: " + (e.message || e));
+    }
+  }
+
+  function importBackupFromFile(file) {
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+      try {
+        const text = ev.target.result;
+        // valida se é JSON
+        JSON.parse(text);
+        // grava no localStorage
+        localStorage.setItem(STORAGE_KEY, text);
+        alert("Backup restaurado com sucesso. O app será recarregado.");
+        location.reload();
+      } catch (e) {
+        console.error(e);
+        alert("Arquivo de backup inválido.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  if (btnBackupExport) {
+    btnBackupExport.addEventListener("click", exportBackup);
+  }
+
+  if (btnBackupImport && backupFileInput) {
+    btnBackupImport.addEventListener("click", () => {
+      backupFileInput.value = "";
+      backupFileInput.click();
+    });
+
+    backupFileInput.addEventListener("change", () => {
+      const file = backupFileInput.files[0];
+      if (!file) return;
+      if (!file.name.endsWith(".json")) {
+        alert("Escolha um arquivo .json de backup.");
+        return;
+      }
+      importBackupFromFile(file);
+    });
+  }
+
+
+
+
+
+  const mealTypes = ["almoco", "jantar", "lanche", "petisco"];
+  let currentMealType = "almoco";
+
+  let currentModalMode = null;
+  let modalRecipeToAddId = null;
+
+  function normalizeLink(url) {
+    if (!url) return "";
+    url = url.trim();
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    return "https://" + url;
+  }
+
+  const btnFontUp = document.getElementById("btnFontUp");
+  const btnFontDown = document.getElementById("btnFontDown");
+  let fontSize = 17;
+
+  function applyFontSize() {
+    document.documentElement.style.setProperty("--base-font-size", fontSize + "px");
+    try {
+      localStorage.setItem(FONT_KEY, String(fontSize));
+    } catch (e) {
+      console.warn("Não foi possível salvar tamanho da fonte:", e);
+    }
+  }
+
+  (function loadFontSize() {
+    try {
+      const stored = localStorage.getItem(FONT_KEY);
+      if (stored) {
+        const n = parseInt(stored, 10);
+        if (!isNaN(n) && n >= 14 && n <= 22) fontSize = n;
+      }
+    } catch (e) {}
+    applyFontSize();
+  })();
+
+  if (btnFontUp) {
+    btnFontUp.addEventListener("click", () => {
+      if (fontSize < 22) {
+        fontSize++;
+        applyFontSize();
+      }
+    });
+  }
+
+  if (btnFontDown) {
+    btnFontDown.addEventListener("click", () => {
+      if (fontSize > 14) {
+        fontSize--;
+        applyFontSize();
+      }
+    });
+  }
+
+  function createDefaultWeeklyPlans() {
+    const arr = [];
+    for (let i = 0; i < 10; i++) {
+      arr.push({
+        name: "Dia " + (i + 1),
+        almoco: [],
+        jantar: [],
+        lanche: [],
+        petisco: []
+      });
+    }
+    return arr;
+  }
+
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  function normalizeRecipes() {
+  if (!Array.isArray(state.recipes)) {
+    state.recipes = [];
+    return;
+  }
+  state.recipes = state.recipes.map(r => {
+    const copy = { ...r };
+
+    if (!copy.id) copy.id = generateId();
+    if (!copy.work) copy.work = "leve";
+
+    // ✅ CORREÇÃO: se existir 'type', ele manda em 'kind'
+    // isso arruma as receitas que estavam com type:"doce" e kind:"salgado"
+    if (copy.type) {
+      copy.kind = copy.type;
+    }
+
+    if (!copy.kind) copy.kind = "salgado";
+    if (!copy.servings || isNaN(copy.servings)) copy.servings = 3;
+    if (typeof copy.favorite !== "boolean") copy.favorite = false;
+
+    if (!Array.isArray(copy.ingredients)) {
+      if (typeof copy.ingredients === "string") {
+        copy.ingredients = copy.ingredients
+          .split("\n")
+          .map(t => t.trim())
+          .filter(Boolean);
+      } else {
+        copy.ingredients = [];
+      }
+    }
+
+    if (copy.link) copy.link = normalizeLink(copy.link);
+    else copy.link = "";
+
+    // (opcional) limpar o campo antigo
+    delete copy.type;
+
+    return copy;
+  });
+}
+
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn("Não foi possível salvar no localStorage:", e);
+    }
+  }
+
+  function loadState() {
+    let raw = null;
+    try {
+      raw = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+      console.warn("localStorage indisponível:", e);
+    }
+
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        state.recipes = Array.isArray(parsed.recipes) ? parsed.recipes : [];
+        state.weeklyPlans =
+          Array.isArray(parsed.weeklyPlans) && parsed.weeklyPlans.length
+            ? parsed.weeklyPlans
+            : createDefaultWeeklyPlans();
+        state.selectedWeekIndex =
+          typeof parsed.selectedWeekIndex === "number" ? parsed.selectedWeekIndex : 0;
+        state.shoppingLists =
+          parsed.shoppingLists && typeof parsed.shoppingLists === "object"
+            ? parsed.shoppingLists
+            : {};
+        state.startWeekdayIndex =
+          typeof parsed.startWeekdayIndex === "number" ? parsed.startWeekdayIndex : 0;
+      } catch (e) {
+        console.warn("Erro ao interpretar estado salvo, recriando:", e);
+        state.recipes = [];
+        state.weeklyPlans = createDefaultWeeklyPlans();
+        state.selectedWeekIndex = 0;
+        state.shoppingLists = {};
+        state.startWeekdayIndex = 0;
+      }
+    } else {
+      state.recipes = INITIAL_RECIPES.map(r => ({
+        ...r,
+        id: r.id || generateId()
+      }));
+      state.weeklyPlans = createDefaultWeeklyPlans();
+      state.selectedWeekIndex = 0;
+      state.shoppingLists = {};
+      state.startWeekdayIndex = 0;
+    }
+
+    if (!state.recipes.length && INITIAL_RECIPES.length) {
+      state.recipes = INITIAL_RECIPES.map(r => ({
+        ...r,
+        id: r.id || generateId()
+      }));
+    }
+
+    normalizeRecipes();
+
+    if (!state.shoppingLists || typeof state.shoppingLists !== "object") {
+      state.shoppingLists = {};
+    }
+  }
+
+  function getRecipeById(id) {
+    return state.recipes.find(r => r.id === id) || null;
+  }
+
+  function removeRecipeFromWeeks(recipeId) {
+    state.weeklyPlans.forEach(wp => {
+      mealTypes.forEach(m => {
+        wp[m] = wp[m].filter(id => id !== recipeId);
+      });
+    });
+  }
+
+  function kindLabel(kind) {
+    if (kind === "doce") return "Doce";
+    return "Salgado";
+  }
+
+  function workLevelLabel(work) {
+    if (work === "leve") return "🟢 leve";
+    if (work === "medio") return "🟡 médio";
+    if (work === "pesado") return "🔴 elaborado";
+    return work;
+  }
+
+  function mealLabel(m) {
+    if (m === "almoco") return "🍛 Almoço";
+    if (m === "jantar") return "🍽 Jantar";
+    if (m === "lanche") return "☕ Lanches";
+    if (m === "petisco") return "🍷 Petiscos com vinho";
+    return m;
+  }
+
+  function weekdayForDayIndex(dayIndex) {
+    const idx = (state.startWeekdayIndex + dayIndex) % 7;
+    return WEEKDAYS_SHORT[idx];
+  }
+
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const tabPanels = document.querySelectorAll(".tab-panel");
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.tab;
+      tabButtons.forEach(b => b.classList.remove("active"));
+      tabPanels.forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(targetId).classList.add("active");
+    });
+  });
+
+  const recipesListEl = document.getElementById("recipesList");
+  const btnNovaReceita = document.getElementById("btnNovaReceita");
+  const recipeFormCard = document.getElementById("recipeFormCard");
+  const recipeForm = document.getElementById("recipeForm");
+  const recipeFormTitle = document.getElementById("recipeFormTitle");
+  const btnCancelarReceita = document.getElementById("btnCancelarReceita");
+
+  const fieldName = document.getElementById("recipeName");
+  const fieldKind = document.getElementById("recipeKind");
+  const fieldWork = document.getElementById("recipeWork");
+  const fieldServings = document.getElementById("recipeServings");
+  const fieldIngredients = document.getElementById("recipeIngredients");
+  const fieldInstructions = document.getElementById("recipeInstructions");
+  const fieldPhoto = document.getElementById("recipePhoto");
+  const fieldLink = document.getElementById("recipeLink");
+
+  const filterFav = document.getElementById("filterFav");
+  const recipeSearch = document.getElementById("recipeSearch");
+
+  const photoOverlay = document.getElementById("photoOverlay");
+  const photoOverlayImg = document.getElementById("photoOverlayImg");
+
+  let currentEditingRecipeId = null;
+
+  function openPhoto(src, alt) {
+    if (!src) return;
+    photoOverlayImg.src = src;
+    photoOverlayImg.alt = alt || "Foto da receita";
+    photoOverlay.classList.add("active");
+  }
+
+  if (photoOverlay) {
+    photoOverlay.addEventListener("click", () => {
+      photoOverlay.classList.remove("active");
+    });
+  }
+
+  function renderRecipesList() {
+    recipesListEl.innerHTML = "";
+
+    if (!state.recipes.length) {
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = "Nenhuma receita cadastrada ainda. Clique em “Nova receita” para começar.";
+      recipesListEl.appendChild(p);
+      return;
+    }
+
+    const fFilter = filterFav ? filterFav.value : "";
+    const searchTerm = recipeSearch.value.trim().toLowerCase();
+
+    const filtered = state.recipes.filter(r => {
+      if (fFilter === "salgado" && r.kind !== "salgado") return false;
+      if (fFilter === "doce" && r.kind !== "doce") return false;
+      if (fFilter === "fav" && !r.favorite) return false;
+
+      const ingredientsText = Array.isArray(r.ingredients)
+        ? r.ingredients.join(" ")
+        : (r.ingredients || "");
+      if (searchTerm) {
+        const haystack =
+          (r.name || "") + " " +
+          ingredientsText + " " +
+          (r.instructions || "") + " " +
+          (r.link || "") + " " +
+          (r.kind || "");
+        if (!haystack.toLowerCase().includes(searchTerm)) return false;
+      }
+
+      return true;
+    });
+
+    if (!filtered.length) {
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = "Nenhuma receita encontrado com esses filtros ou busca.";
+      recipesListEl.appendChild(p);
+      return;
+    }
+
+    filtered.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "recipe-card";
+
+      const top = document.createElement("div");
+      top.className = "recipe-top";
+
+      if (r.photo) {
+        const img = document.createElement("img");
+        img.className = "recipe-photo";
+        img.src = r.photo;
+        img.alt = r.name;
+        img.addEventListener("click", () => openPhoto(r.photo, r.name));
+        top.appendChild(img);
+      }
+
+      const main = document.createElement("div");
+      main.className = "recipe-main";
+
+      const nameEl = document.createElement("div");
+      nameEl.className = "recipe-name";
+      nameEl.textContent = r.name;
+
+      const metaEl = document.createElement("div");
+      metaEl.className = "recipe-meta";
+      metaEl.textContent =
+        kindLabel(r.kind) + " • " +
+        workLevelLabel(r.work) +
+        (r.servings ? " • " + r.servings + " porções" : "");
+
+      main.appendChild(nameEl);
+      main.appendChild(metaEl);
+
+      if (r.link) {
+        const linkRow = document.createElement("div");
+        linkRow.className = "recipe-link-inline small";
+        const a = document.createElement("a");
+        a.href = normalizeLink(r.link);
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "🔗 Abrir receita";
+        linkRow.appendChild(a);
+        main.appendChild(linkRow);
+      }
+
+      top.appendChild(main);
+
+      const actions = document.createElement("div");
+      actions.className = "recipe-actions";
+
+      const detailsBtn = document.createElement("button");
+      detailsBtn.className = "btn sm";
+      detailsBtn.dataset.action = "details";
+      detailsBtn.dataset.id = r.id;
+      detailsBtn.textContent = "🙈";
+
+      const favBtn = document.createElement("button");
+      favBtn.className = "btn sm";
+      favBtn.dataset.action = "fav";
+      favBtn.dataset.id = r.id;
+      favBtn.textContent = r.favorite ? "⭐️" : "☆";
+
+      const addDayBtn = document.createElement("button");
+      addDayBtn.className = "btn sm";
+      addDayBtn.dataset.action = "add-to-day";
+      addDayBtn.dataset.id = r.id;
+      addDayBtn.textContent = "📅";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn sm";
+      editBtn.dataset.action = "edit";
+      editBtn.dataset.id = r.id;
+      editBtn.textContent = "✏️";
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "btn sm danger";
+      delBtn.dataset.action = "delete";
+      delBtn.dataset.id = r.id;
+      delBtn.textContent = "🗑";
+
+      actions.appendChild(detailsBtn);
+      actions.appendChild(favBtn);
+      actions.appendChild(addDayBtn);
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+
+      const details = document.createElement("div");
+      details.className = "recipe-details";
+      details.style.display = "none";
+
+      if (Array.isArray(r.ingredients) && r.ingredients.length) {
+        const ingTitle = document.createElement("div");
+        ingTitle.className = "section-title";
+        ingTitle.textContent = "Ingredientes";
+
+        const ingList = document.createElement("ul");
+        r.ingredients.forEach(ing => {
+          const li = document.createElement("li");
+          li.textContent = ing;
+          ingList.appendChild(li);
+        });
+
+        details.appendChild(ingTitle);
+        details.appendChild(ingList);
+      }
+
+      if (r.instructions) {
+        const instrTitle = document.createElement("div");
+        instrTitle.className = "section-title";
+        instrTitle.textContent = "Modo de preparo";
+
+        const instrText = document.createElement("p");
+        instrText.className = "small";
+        instrText.style.whiteSpace = "pre-wrap";
+        instrText.textContent = r.instructions || "";
+
+        details.appendChild(instrTitle);
+        details.appendChild(instrText);
+      }
+
+      if (r.link) {
+        const linkEl = document.createElement("a");
+        linkEl.href = normalizeLink(r.link);
+        linkEl.target = "_blank";
+        linkEl.rel = "noopener noreferrer";
+        linkEl.textContent = "Abrir receita em vídeo/site";
+        linkEl.className = "small";
+        details.appendChild(linkEl);
+      }
+
+      card.appendChild(top);
+      card.appendChild(actions);
+      card.appendChild(details);
+
+      recipesListEl.appendChild(card);
+    });
+  }
+
+  function openRecipeForm(isEdit, recipe) {
+    recipeFormCard.style.display = "block";
+    recipeForm.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    if (isEdit && recipe) {
+      recipeFormTitle.textContent = "Editar receita";
+      fieldName.value = recipe.name || "";
+      fieldKind.value = recipe.kind || "salgado";
+      fieldWork.value = recipe.work || "leve";
+      fieldServings.value = recipe.servings || 3;
+      fieldIngredients.value = Array.isArray(recipe.ingredients)
+        ? recipe.ingredients.join("\n")
+        : (recipe.ingredients || "");
+      fieldInstructions.value = recipe.instructions || "";
+      fieldLink.value = recipe.link || "";
+      fieldPhoto.value = "";
+    } else {
+      recipeFormTitle.textContent = "Nova receita";
+      recipeForm.reset();
+      fieldKind.value = "salgado";
+      fieldWork.value = "leve";
+      fieldServings.value = 3;
+      fieldLink.value = "";
+    }
+  }
+
+  function closeRecipeForm() {
+    recipeFormCard.style.display = "none";
+    currentEditingRecipeId = null;
+  }
+
+  if (btnNovaReceita) {
+    btnNovaReceita.addEventListener("click", () => {
+      currentEditingRecipeId = null;
+      openRecipeForm(false, null);
+    });
+  }
+
+  if (btnCancelarReceita) {
+    btnCancelarReceita.addEventListener("click", () => {
+      closeRecipeForm();
+    });
+  }
+
+  recipesListEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+    if (!action || !id) return;
+
+    const recipe = getRecipeById(id);
+    if (!recipe) return;
+
+    if (action === "edit") {
+      currentEditingRecipeId = id;
+      openRecipeForm(true, recipe);
+    } else if (action === "delete") {
+      if (confirm("Tem certeza que deseja excluir esta receita?")) {
+        state.recipes = state.recipes.filter(r => r.id !== id);
+        removeRecipeFromWeeks(id);
+        saveState();
+        renderRecipesList();
+        renderWeekView();
+      }
+    } else if (action === "fav") {
+      recipe.favorite = !recipe.favorite;
+      btn.textContent = recipe.favorite ? "⭐️" : "☆";
+      saveState();
+    } else if (action === "details") {
+      const card = btn.closest(".recipe-card");
+      if (!card) return;
+      const detailsEl = card.querySelector(".recipe-details");
+      if (!detailsEl) return;
+      const isVisible = detailsEl.style.display === "block";
+      detailsEl.style.display = isVisible ? "none" : "block";
+      btn.textContent = isVisible ? "🙈" : "🐵";
+    } else if (action === "add-to-day") {
+      openAddToDayModal(id, recipe.name);
+    }
+  });
+
+  [filterFav, recipeSearch].forEach(el => {
+    if (!el) return;
+    el.addEventListener("input", renderRecipesList);
+    el.addEventListener("change", renderRecipesList);
+  });
+
+  recipeForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = fieldName.value.trim();
+    if (!name) {
+      alert("Informe um nome para a receita.");
+      return;
+    }
+
+    const ingredientsLines = fieldIngredients.value
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean);
+
+    const baseRecipe = {
+      name,
+      kind: fieldKind.value || "salgado",
+      work: fieldWork.value,
+      servings: Number(fieldServings.value) || 3,
+      ingredients: ingredientsLines,
+      instructions: fieldInstructions.value.trim(),
+      link: normalizeLink(fieldLink.value)
+    };
+
+    const file = fieldPhoto.files[0];
+
+    function finishSave(photoDataUrl) {
+      if (photoDataUrl) baseRecipe.photo = photoDataUrl;
+
+      if (currentEditingRecipeId) {
+        const idx = state.recipes.findIndex(r => r.id === currentEditingRecipeId);
+        if (idx >= 0) {
+          const existing = state.recipes[idx];
+          state.recipes[idx] = {
+            ...existing,
+            ...baseRecipe,
+            favorite: existing.favorite,
+            photo: photoDataUrl || existing.photo || null
+          };
+        }
+      } else {
+        baseRecipe.id = generateId();
+        baseRecipe.favorite = false;
+        baseRecipe.photo = baseRecipe.photo || null;
+        state.recipes.push(baseRecipe);
+      }
+
+      normalizeRecipes();
+      saveState();
+
+      if (filterFav) filterFav.value = "";
+      if (recipeSearch) recipeSearch.value = "";
+
+      renderRecipesList();
+      renderWeekView();
+      closeRecipeForm();
+    }
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        finishSave(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      finishSave(null);
+    }
+  });
+
+  const weekSelect = document.getElementById("weekSelect");
+  const mealSelect = document.getElementById("mealSelect");
+  const startWeekdaySelect = document.getElementById("startWeekdaySelect");
+  const currentMealTitle = document.getElementById("currentMealTitle");
+  const dayMealsContainer = document.getElementById("dayMealsContainer");
+  const btnEditCurrentMeal = document.getElementById("btnEditCurrentMeal");
+  const btnClearDay = document.getElementById("btnClearDay");
+
+ // ==== CALENDÁRIO DO CARDÁPIO ====
+  const btnVerCalendario = document.getElementById("btnVerCalendario");
+  const calendarOverlay = document.getElementById("calendarOverlay");
+  const calendarContent = document.getElementById("calendarContent");
+  const calendarClose = document.getElementById("calendarClose");
+
+  const calendarMealTypes = ["almoco", "lanche", "jantar", "petisco"];
+
+  function buildDayMealsText(dayPlan) {
+    const lines = [];
+
+    calendarMealTypes.forEach(mt => {
+      const ids = dayPlan[mt] || [];
+      if (!ids.length) return;
+
+      let label = "";
+      if (mt === "almoco") label = "Almoço";
+      else if (mt === "lanche") label = "Lanches";
+      else if (mt === "jantar") label = "Jantar";
+      else if (mt === "petisco") label = "Petiscos com vinho";
+
+      const names = ids
+        .map(id => {
+          const r = getRecipeById(id);
+          return r ? r.name : "(receita removida)";
+        })
+        .join(", ");
+
+      lines.push(`<strong>${label}:</strong> ${names}`);
+    });
+
+    if (!lines.length) {
+      return '<span class="small">Nenhuma receita escolhida para este dia.</span>';
+    }
+
+    return lines.join("<br>");
+  }
+
+  function renderCalendarView() {
+    if (!state.weeklyPlans || !state.weeklyPlans.length) {
+      calendarContent.innerHTML =
+        '<p class="small">Nenhum dia de cardápio foi configurado ainda.</p>';
+      return;
+    }
+
+    let html = '<div style="display:flex; flex-direction:column; gap:0.75rem;">';
+
+    state.weeklyPlans.forEach((dayPlan, index) => {
+      const dayNumber = index + 1;
+      const weekdayLabel = weekdayForDayIndex(index); // usa o que você já tem
+      const mealsHtml = buildDayMealsText(dayPlan);
+
+      html += `
+        <div style="border:1px solid var(--border); border-radius:8px; padding:0.5rem 0.75rem;">
+          <div class="section-title">Dia ${dayNumber} (${weekdayLabel})</div>
+          <div class="small">${mealsHtml}</div>
+        </div>
+      `;
+    });
+
+    html += "</div>";
+    calendarContent.innerHTML = html;
+  }
+
+  if (btnVerCalendario && calendarOverlay && calendarContent) {
+    btnVerCalendario.addEventListener("click", () => {
+      renderCalendarView();
+      calendarOverlay.classList.add("active");
+    });
+  }
+
+  if (calendarClose) {
+    calendarClose.addEventListener("click", () => {
+      calendarOverlay.classList.remove("active");
+    });
+  }
+
+  if (calendarOverlay) {
+    calendarOverlay.addEventListener("click", (e) => {
+      if (e.target === calendarOverlay) {
+        calendarOverlay.classList.remove("active");
+      }
+    });
+  }
+
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalContent = document.getElementById("modalContent");
+  const modalCancel = document.getElementById("modalCancel");
+  const modalSave = document.getElementById("modalSave");
+
+  function refreshDaySelectLabels() {
+    if (!weekSelect) return;
+    const opts = weekSelect.options;
+    for (let i = 0; i < opts.length; i++) {
+      const wd = weekdayForDayIndex(i);
+      opts[i].textContent = `Dia ${i + 1} (${wd})`;
+    }
+  }
+
+  function renderDayMeals() {
+    const wp = state.weeklyPlans[state.selectedWeekIndex];
+    dayMealsContainer.innerHTML = "";
+
+    mealTypes.forEach(m => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "week-list";
+
+      const title = document.createElement("div");
+      title.className = "section-title";
+      title.textContent = mealLabel(m) + (m === currentMealType ? " (editando)" : "");
+      wrapper.appendChild(title);
+
+      const ids = wp && wp[m] ? wp[m] : [];
+      if (!ids.length) {
+        const p = document.createElement("p");
+        p.className = "small";
+        p.textContent = "Nenhuma receita selecionada.";
+        wrapper.appendChild(p);
+      } else {
+        const ul = document.createElement("ul");
+        ids.forEach(id => {
+          const r = getRecipeById(id);
+          const li = document.createElement("li");
+          const span = document.createElement("span");
+          span.textContent = r ? r.name : "(receita removida)";
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "btn sm danger";
+          removeBtn.dataset.action = "remove-day-recipe";
+          removeBtn.dataset.meal = m;
+          removeBtn.dataset.recipeId = id;
+          removeBtn.textContent = "❌";
+          li.appendChild(span);
+          li.appendChild(removeBtn);
+          ul.appendChild(li);
+        });
+        wrapper.appendChild(ul);
+      }
+
+      dayMealsContainer.appendChild(wrapper);
+    });
+  }
+
+  function renderWeekView() {
+    const d = state.selectedWeekIndex + 1;
+    const wd = weekdayForDayIndex(state.selectedWeekIndex);
+    currentMealTitle.textContent = "Opções do dia " + d + " (" + wd + ")";
+    renderDayMeals();
+  }
+
+  if (weekSelect) {
+    weekSelect.addEventListener("change", () => {
+      state.selectedWeekIndex = Number(weekSelect.value) || 0;
+      saveState();
+      renderWeekView();
+    });
+  }
+
+  if (mealSelect) {
+    mealSelect.addEventListener("change", () => {
+      currentMealType = mealSelect.value;
+      renderWeekView();
+    });
+  }
+
+  if (startWeekdaySelect) {
+    startWeekdaySelect.addEventListener("change", () => {
+      state.startWeekdayIndex = Number(startWeekdaySelect.value) || 0;
+      saveState();
+      refreshDaySelectLabels();
+      renderWeekView();
+    });
+  }
+
+  dayMealsContainer.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    if (btn.dataset.action !== "remove-day-recipe") return;
+    const meal = btn.dataset.meal;
+    const recipeId = btn.dataset.recipeId;
+    if (!meal || !recipeId) return;
+    if (!confirm("Remover esta receita deste dia?")) return;
+
+    const wp = state.weeklyPlans[state.selectedWeekIndex];
+    if (!wp) return;
+    wp[meal] = (wp[meal] || []).filter(id => id !== recipeId);
+    saveState();
+    renderWeekView();
+  });
+
+  if (btnClearDay) {
+    btnClearDay.addEventListener("click", () => {
+      if (!confirm("Tem certeza que deseja limpar todas as opções deste dia?")) return;
+      const wp = state.weeklyPlans[state.selectedWeekIndex];
+      if (!wp) return;
+      mealTypes.forEach(m => { wp[m] = []; });
+      saveState();
+      renderWeekView();
+    });
+  }
+
+  function openWeekModal() {
+    currentModalMode = "editDayMeal";
+    modalRecipeToAddId = null;
+
+    const label = mealLabel(currentMealType);
+    modalTitle.textContent = "Escolher receitas para " + label;
+
+    const recipesOfType = state.recipes || [];
+    modalContent.innerHTML = "";
+
+    if (!recipesOfType.length) {
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = "Você ainda não cadastrou receitas.";
+      modalContent.appendChild(p);
+    } else {
+      const ul = document.createElement("ul");
+      ul.className = "recipe-checkbox-list";
+
+      const wp = state.weeklyPlans[state.selectedWeekIndex] || {
+        almoco: [], jantar: [], lanche: [], petisco: []
+      };
+      const selectedIds = wp[currentMealType] || [];
+
+      recipesOfType.forEach(r => {
+        const li = document.createElement("li");
+        const id = "chk_" + currentMealType + "_" + r.id;
+        const meta = workLevelLabel(r.work);
+        li.innerHTML =
+          '<label><input type="checkbox" id="' + id + '" data-recipe-id="' + r.id + '"' +
+          (selectedIds.includes(r.id) ? " checked" : "") +
+          "> " + r.name + ' <span class="small">(' + meta + ')</span></label>';
+        ul.appendChild(li);
+      });
+
+      modalContent.appendChild(ul);
+    }
+
+    modalOverlay.classList.add("active");
+  }
+
+  function openAddToDayModal(recipeId, recipeName) {
+    currentModalMode = "addSingleRecipe";
+    modalRecipeToAddId = recipeId;
+
+    modalTitle.textContent = 'Adicionar "' + (recipeName || "") + '" ao dia';
+
+    const selectedIdx = state.selectedWeekIndex;
+
+    const html = `
+      <label for="modalDaySelect">Dia</label>
+      <select id="modalDaySelect">
+        ${Array.from({length:10}).map((_,i)=>{
+          const wd = WEEKDAYS_SHORT[(state.startWeekdayIndex + i) % 7];
+          return `<option value="${i}" ${i===selectedIdx ? "selected":""}>Dia ${i+1} (${wd})</option>`;
+        }).join("")}
+      </select>
+
+      <label for="modalMealSelect">Tipo de refeição</label>
+      <select id="modalMealSelect">
+        <option value="almoco">🍛 Almoço</option>
+        <option value="jantar">🍽 Jantar</option>
+        <option value="lanche">☕ Lanches</option>
+        <option value="petisco">🍷 Petiscos com vinho</option>
+      </select>
+    `;
+    modalContent.innerHTML = html;
+    modalOverlay.classList.add("active");
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove("active");
+    currentModalMode = null;
+    modalRecipeToAddId = null;
+  }
+
+  if (btnEditCurrentMeal) {
+    btnEditCurrentMeal.addEventListener("click", () => {
+      openWeekModal();
+    });
+  }
+
+  if (modalCancel) {
+    modalCancel.addEventListener("click", () => {
+      closeModal();
+    });
+  }
+
+  if (modalOverlay) {
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+  }
+
+  if (modalSave) {
+    modalSave.addEventListener("click", () => {
+      if (currentModalMode === "editDayMeal") {
+        if (!state.weeklyPlans || !state.weeklyPlans.length) {
+          state.weeklyPlans = createDefaultWeeklyPlans();
+        }
+        const wp = state.weeklyPlans[state.selectedWeekIndex] || {
+          almoco: [], jantar: [], lanche: [], petisco: []
+        };
+        const inputs = modalContent.querySelectorAll("input[type=checkbox][data-recipe-id]");
+        const selected = [];
+        inputs.forEach(input => {
+          if (input.checked) selected.push(input.dataset.recipeId);
+        });
+        wp[currentMealType] = selected;
+        state.weeklyPlans[state.selectedWeekIndex] = wp;
+        saveState();
+        renderWeekView();
+        closeModal();
+      } else if (currentModalMode === "addSingleRecipe" && modalRecipeToAddId) {
+        const daySelect = modalContent.querySelector("#modalDaySelect");
+        const mealSelectModal = modalContent.querySelector("#modalMealSelect");
+        const dayIdx = daySelect ? Number(daySelect.value) || 0 : 0;
+        const meal = mealSelectModal ? mealSelectModal.value : "almoco";
+
+        if (!state.weeklyPlans || !state.weeklyPlans.length) {
+          state.weeklyPlans = createDefaultWeeklyPlans();
+        }
+        const wp = state.weeklyPlans[dayIdx] || {
+          almoco: [], jantar: [], lanche: [], petisco: []
+        };
+        if (!Array.isArray(wp[meal])) wp[meal] = [];
+        if (!wp[meal].includes(modalRecipeToAddId)) {
+          wp[meal].push(modalRecipeToAddId);
+        }
+        state.weeklyPlans[dayIdx] = wp;
+        saveState();
+
+        if (state.selectedWeekIndex === dayIdx) {
+          renderWeekView();
+        }
+
+        closeModal();
+      } else {
+        closeModal();
+      }
+    });
+  }
+
+  const btnGerarLista = document.getElementById("btnGerarLista");
+  const btnClearShopping = document.getElementById("btnClearShopping");
+  const shoppingListContainer = document.getElementById("shoppingListContainer");
+
+  // Linhas que vão para a lista de compras:
+  // - ignoramos linhas começando com "- " (títulos/seções)
+  function isShoppingIngredientLine(txt) {
+    if (!txt) return false;
+    const t = String(txt).trim();
+    if (!t) return false;
+    if (t.startsWith("#")) return false; // é seção, não ingrediente
+    return true; // todo o resto entra na lista
+  }
+
+
+  function buildBlocksFromWeeklyPlans() {
+    const blocks = [];
+    const usedIds = new Set();
+
+    state.weeklyPlans.forEach(wp => {
+      if (!wp) return;
+      mealTypes.forEach(mt => {
+        (wp[mt] || []).forEach(id => {
+          const r = getRecipeById(id);
+          if (!r || !r.ingredients) return;
+          if (usedIds.has(id)) return;
+          usedIds.add(id);
+                    const ingredientsArray = Array.isArray(r.ingredients)
+            ? [...r.ingredients]
+            : (r.ingredients ? [r.ingredients] : []);
+
+          // filtramos: só entram as linhas que NÃO são título (não começam com "#")
+          const shoppingIngredients = ingredientsArray.filter(isShoppingIngredientLine);
+
+          // se por acaso a receita não tiver nenhum ingrediente "comprável", pulamos
+          if (!shoppingIngredients.length) return;
+
+          blocks.push({
+            id: generateId(),
+            type: "recipe",
+            recipeId: id,
+            name: r.name,
+            items: shoppingIngredients.map(txt => ({
+              id: generateId(),
+              text: txt,
+              checked: false
+            }))
+          });
+
+        });
+      });
+    });
+
+    return blocks;
+  }
+
+  function ensureShoppingBlocksGlobal() {
+    const key = "all";
+    if (!state.shoppingLists) state.shoppingLists = {};
+    const existing = state.shoppingLists[key];
+    if (existing && Array.isArray(existing.blocks)) {
+      existing.blocks.forEach(b => {
+        if (!b.type) b.type = b.recipeId ? "recipe" : "custom";
+        if (!Array.isArray(b.items)) b.items = [];
+      });
+      return existing.blocks;
+    }
+
+    const blocks = buildBlocksFromWeeklyPlans();
+    state.shoppingLists[key] = { blocks };
+    saveState();
+    return blocks;
+  }
+
+  function renderShoppingList() {
+    const blocks = ensureShoppingBlocksGlobal();
+    shoppingListContainer.innerHTML = "";
+
+    if (!blocks.length) {
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = "Nenhuma receita selecionada ainda. Escolha receitas na aba “Dia”.";
+      shoppingListContainer.appendChild(p);
+    } else {
+      blocks.forEach(block => {
+        const blockEl = document.createElement("div");
+        blockEl.className = "shopping-recipe-block";
+        blockEl.dataset.blockId = block.id;
+
+        const header = document.createElement("div");
+        header.className = "shopping-header";
+
+        const title = document.createElement("div");
+        title.className = "section-title";
+        title.textContent = block.name || (block.type === "custom" ? "Lista avulsa" : "Receita");
+
+        const headerActions = document.createElement("div");
+        headerActions.className = "shopping-header-actions";
+
+        const addItemBtn = document.createElement("button");
+        addItemBtn.className = "btn sm";
+        addItemBtn.dataset.action = "add-item";
+        addItemBtn.textContent = "➕ item";
+
+        headerActions.appendChild(addItemBtn);
+
+        if (block.type === "recipe") {
+          const finishBtn = document.createElement("button");
+          finishBtn.className = "btn sm";
+          finishBtn.dataset.action = "finish-list";
+          finishBtn.textContent = "Finalizar lista";
+          headerActions.appendChild(finishBtn);
+        }
+
+        header.appendChild(title);
+        header.appendChild(headerActions);
+
+        const ul = document.createElement("ul");
+        block.items.forEach(item => {
+          const li = document.createElement("li");
+          li.dataset.itemId = item.id;
+
+          const label = document.createElement("label");
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.dataset.itemId = item.id;
+          if (item.checked) checkbox.checked = true;
+
+          const span = document.createElement("span");
+          span.contentEditable = "true";
+          span.dataset.itemId = item.id;
+          span.textContent = item.text;
+
+          label.appendChild(checkbox);
+          label.appendChild(span);
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "btn sm";
+          editBtn.dataset.action = "edit-item";
+          editBtn.dataset.itemId = item.id;
+          editBtn.textContent = "✏️";
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn sm danger";
+          delBtn.dataset.action = "delete-item";
+          delBtn.dataset.itemId = item.id;
+          delBtn.textContent = "🗑";
+
+          li.appendChild(label);
+          li.appendChild(editBtn);
+          li.appendChild(delBtn);
+
+          ul.appendChild(li);
+        });
+
+        blockEl.appendChild(header);
+        blockEl.appendChild(ul);
+        shoppingListContainer.appendChild(blockEl);
+      });
+    }
+
+    const extraBlock = document.createElement("div");
+    extraBlock.className = "shopping-recipe-block";
+    const h = document.createElement("div");
+    h.className = "shopping-header";
+    const t = document.createElement("div");
+    t.className = "section-title";
+    t.textContent = "Listas avulsas";
+    const actions = document.createElement("div");
+    actions.className = "shopping-header-actions";
+    const newListBtn = document.createElement("button");
+    newListBtn.className = "btn sm";
+    newListBtn.dataset.action = "new-custom-list";
+    newListBtn.textContent = "➕ Nova lista avulsa";
+    actions.appendChild(newListBtn);
+    h.appendChild(t);
+    h.appendChild(actions);
+    extraBlock.appendChild(h);
+    shoppingListContainer.appendChild(extraBlock);
+  }
+
+  if (btnGerarLista) {
+    btnGerarLista.addEventListener("click", () => {
+      const blocks = buildBlocksFromWeeklyPlans();
+      state.shoppingLists["all"] = { blocks };
+      saveState();
+      renderShoppingList();
+    });
+  }
+
+  if (btnClearShopping) {
+    btnClearShopping.addEventListener("click", () => {
+      const key = "all";
+      const existing = state.shoppingLists[key];
+      if (!existing || !existing.blocks || !existing.blocks.length) {
+        alert("Não há lista gerada ainda.");
+        return;
+      }
+      if (!confirm("Limpar toda a lista geral de compras?")) return;
+      delete state.shoppingLists[key];
+      saveState();
+      shoppingListContainer.innerHTML = '<p class="small">Lista apagada. Gere novamente se precisar.</p>';
+    });
+  }
+
+  shoppingListContainer.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const action = btn.dataset.action;
+    if (!action) return;
+
+    const key = "all";
+    const blocks = ensureShoppingBlocksGlobal();
+
+    if (action === "new-custom-list") {
+      const countCustom = blocks.filter(b => b.type === "custom").length;
+      blocks.push({
+        id: generateId(),
+        type: "custom",
+        recipeId: null,
+        name: "Lista avulsa " + (countCustom + 1),
+        items: []
+      });
+      state.shoppingLists[key] = { blocks };
+      saveState();
+      renderShoppingList();
+      return;
+    }
+
+    const blockEl = btn.closest(".shopping-recipe-block");
+    if (!blockEl) return;
+    const blockId = blockEl.dataset.blockId;
+    const block = blocks.find(b => b.id === blockId);
+    if (!block) return;
+
+    if (action === "add-item") {
+      block.items.unshift({
+        id: generateId(),
+        text: "Novo item",
+        checked: false
+      });
+      state.shoppingLists[key] = { blocks };
+      saveState();
+      renderShoppingList();
+    } else if (action === "finish-list") {
+      if (!confirm("Remover esta lista de compras?")) return;
+      const idxBlock = blocks.findIndex(b => b.id === blockId);
+      if (idxBlock >= 0) {
+        blocks.splice(idxBlock, 1);
+        state.shoppingLists[key] = { blocks };
+        saveState();
+        renderShoppingList();
+      }
+    } else if (action === "delete-item") {
+      const itemId = btn.dataset.itemId;
+      if (!itemId) return;
+      if (!confirm("Excluir este item da lista?")) return;
+      block.items = block.items.filter(it => it.id !== itemId);
+      state.shoppingLists[key] = { blocks };
+      saveState();
+      renderShoppingList();
+    } else if (action === "edit-item") {
+      const itemId = btn.dataset.itemId;
+      if (!itemId) return;
+      const li = blockEl.querySelector('li[data-item-id="' + itemId + '"]');
+      if (!li) return;
+      const span = li.querySelector('span[contenteditable="true"]');
+      if (!span) return;
+
+      const editing = btn.dataset.mode === "editing";
+      if (!editing) {
+        btn.dataset.mode = "editing";
+        btn.textContent = "OK";
+        span.focus();
+        const sel = window.getSelection && window.getSelection();
+        if (sel && sel.removeAllRanges) {
+          const range = document.createRange();
+          range.selectNodeContents(span);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      } else {
+        btn.dataset.mode = "";
+        btn.textContent = "✏️";
+        span.blur();
+        saveState();
+      }
+    }
+  });
+
+  shoppingListContainer.addEventListener("input", (e) => {
+    const span = e.target.closest('span[contenteditable="true"][data-item-id]');
+    if (!span) return;
+    const itemId = span.dataset.itemId;
+    const blockEl = span.closest(".shopping-recipe-block");
+    if (!blockEl) return;
+    const blockId = blockEl.dataset.blockId;
+
+    const key = "all";
+    const blocks = ensureShoppingBlocksGlobal();
+    const block = blocks.find(b => b.id === blockId);
+    if (!block) return;
+    const item = block.items.find(it => it.id === itemId);
+    if (!item) return;
+
+    item.text = span.textContent.trim();
+    state.shoppingLists[key] = { blocks };
+    saveState();
+  });
+
+  shoppingListContainer.addEventListener("change", (e) => {
+    const input = e.target.closest('input[type="checkbox"][data-item-id]');
+    if (!input) return;
+    const itemId = input.dataset.itemId;
+    const blockEl = input.closest(".shopping-recipe-block");
+    if (!blockEl) return;
+    const blockId = blockEl.dataset.blockId;
+
+    const key = "all";
+    const blocks = ensureShoppingBlocksGlobal();
+    const block = blocks.find(b => b.id === blockId);
+    if (!block) return;
+    const item = block.items.find(it => it.id === itemId);
+    if (!item) return;
+
+    item.checked = !!input.checked;
+    state.shoppingLists[key] = { blocks };
+    saveState();
+  });
+
+  loadState();
+
+  if (!state.weeklyPlans || !state.weeklyPlans.length) {
+    state.weeklyPlans = createDefaultWeeklyPlans();
+  } else if (state.weeklyPlans.length < 10) {
+    const missing = 10 - state.weeklyPlans.length;
+    for (let i = 0; i < missing; i++) {
+      state.weeklyPlans.push({
+        name: "Dia " + (state.weeklyPlans.length + 1),
+        almoco: [],
+        jantar: [],
+        lanche: [],
+        petisco: []
+      });
+    }
+  }
+
+  const weekSelectEl = document.getElementById("weekSelect");
+  const mealSelectEl = document.getElementById("mealSelect");
+  const startWeekdaySelectEl = document.getElementById("startWeekdaySelect");
+
+  if (weekSelectEl) {
+    weekSelectEl.value = String(state.selectedWeekIndex);
+  }
+  if (mealSelectEl) {
+    mealSelectEl.value = currentMealType;
+  }
+  if (startWeekdaySelectEl) {
+    startWeekdaySelectEl.value = String(state.startWeekdayIndex || 0);
+  }
+
+  refreshDaySelectLabels();
+  renderRecipesList();
+  renderWeekView();
+})();
+</script>
+
+<!-- Registro do service worker -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("./sw.js").catch(function(err) {
+      console.log("Service worker não registrado:", err);
+    });
+  });
+}
+</script>
+
+</body>
+</html>
