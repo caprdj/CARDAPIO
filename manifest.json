@@ -1,5 +1,5 @@
 {
-  "name": "Cardápio — Mamãe",
+  "name": "Cardápio",
   "short_name": "Cardápio",
   "description": "Organize receitas, dias e lista de compras de forma simples, com opções de almoço, jantar, lanches e petiscos com vinho.",
   "lang": "pt-BR",
@@ -22,3 +22,4 @@
     }
   ]
 }
+
