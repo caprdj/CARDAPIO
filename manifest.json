@@ -1,7 +1,6 @@
 {
-  "name": "Cardápio",
+  "name": "Cardápio (Mãe)",
   "short_name": "Cardápio",
-  "description": "Cardápio — receitas, filtros e planejamento do dia",
   "start_url": "/CARDAPIO-mae/",
   "scope": "/CARDAPIO-mae/",
   "display": "standalone",

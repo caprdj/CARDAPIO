@@ -1,5 +1,5 @@
-/* Cardápio (mãe) — Service Worker básico para PWA (GitHub Pages / subpasta) */
-const CACHE_NAME = "cardapio-mae-v1";
+/* Cardápio (Mãe) — Service Worker */
+const CACHE_NAME = "cardapio-mae-v34";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,37 +9,60 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).catch(() => {})
   );
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))))
-    ).then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => (k !== CACHE_NAME ? caches.delete(k) : Promise.resolve())));
+    await self.clients.claim();
+  })());
 });
 
+// Estratégia simples: cache-first para arquivos locais; network-first para o restante
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
-  event.respondWith(
-    caches.match(req).then((cached) => {
+  const url = new URL(req.url);
+
+  // Só intercepta dentro do escopo do GitHub Pages do app
+  if (!url.pathname.includes("/CARDAPIO-mae/")) return;
+
+  // Arquivos estáticos: cache-first
+  if (url.pathname.endsWith(".html") || url.pathname.endsWith(".json") || url.pathname.endsWith(".png") || url.pathname.endsWith(".js") || url.pathname.endsWith("/")) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(req, { ignoreSearch: true });
       if (cached) return cached;
-      return fetch(req).then((res) => {
-        // Cache só o que é same-origin
-        try {
-          const url = new URL(req.url);
-          if (url.origin === self.location.origin) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          }
-        } catch(e){}
-        return res;
-      }).catch(() => caches.match("./index.html"));
-    })
-  );
+
+      try {
+        const fresh = await fetch(req);
+        if (fresh && fresh.ok) cache.put(req, fresh.clone());
+        return fresh;
+      } catch (e) {
+        // fallback: index.html
+        const fallback = await cache.match("./index.html");
+        return fallback || Response.error();
+      }
+    })());
+    return;
+  }
+
+  // Demais: tenta rede e cai no cache
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    try {
+      const fresh = await fetch(req);
+      if (fresh && fresh.ok) cache.put(req, fresh.clone());
+      return fresh;
+    } catch (e) {
+      const cached = await cache.match(req, { ignoreSearch: true });
+      return cached || Response.error();
+    }
+  })());
 });

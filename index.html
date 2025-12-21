@@ -5,8 +5,7 @@
   <title> Cardápio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#2d7a5b" />
-    <link rel="manifest" href="manifest.json" />
-<style>
+  <style>
     :root{
       --bg:#f5f5fa;
       --card:#ffffff;
@@ -140,6 +139,7 @@
 .chip.danger{ border-color:rgba(192,57,43,.35); background:rgba(192,57,43,.10); color:var(--danger); }
 
 </style>
+  <link rel="manifest" href="./manifest.json" />
 </head>
 <body>
   <div class="topbar">
@@ -149,8 +149,7 @@
         <h1>Cardápio</h1>
         <div class="small">  </div>
         <div class="spacer"></div>
-        
-      </div>
+</div>
       <div class="tabs">
         <button class="tabbtn active" data-tab="filter">✨ Filtro</button>
         <button class="tabbtn" data-tab="day">🗓️</button>
@@ -2748,13 +2747,17 @@ btnCopyShop.addEventListener("click", async ()=>{
 saveState();
 renderDay();
 </script>
+
 <script>
-  // PWA: registra service worker (necessário para "Instalar app" no Android/Chrome)
+  // PWA: registra o Service Worker (necessário para aparecer "Instalar app" no Chrome/Android)
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
+      // cache-bust para evitar SW antigo preso no cache
+      navigator.serviceWorker.register("./sw.js?v=34-mae")
+        .catch(err => console.warn("SW register failed:", err));
     });
   }
 </script>
+
 </body>
 </html>
