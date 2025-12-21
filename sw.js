@@ -1,63 +1,45 @@
-// Nome do cache — se mudar algo grande, troque o v1 por v2, v3...
-const CACHE_NAME = "cardapio-cache-v1";
-
-// Arquivos principais para funcionar offline
-const ASSETS_TO_CACHE = [
+/* Cardápio (mãe) — Service Worker básico para PWA (GitHub Pages / subpasta) */
+const CACHE_NAME = "cardapio-mae-v1";
+const ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json"
-  // Se você tiver outros arquivos fixos (ex: ./icons/icon-192.png), pode adicionar aqui
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-// Instalação do service worker: guarda os arquivos no cache
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// Ativação: limpa caches antigos, se houver
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      )
-    )
+      Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Intercepta requisições: tenta usar o cache primeiro, depois a rede
 self.addEventListener("fetch", (event) => {
-  const request = event.request;
-
-  // Só tratamos GET; POST/PUT/etc vão direto para a rede
-  if (request.method !== "GET") {
-    return;
-  }
+  const req = event.request;
+  if (req.method !== "GET") return;
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(request).catch(() => {
-        // Se der erro na rede e não tiver no cache, simplesmente falha
-        // (poderia retornar uma página offline aqui, se você quiser futuramente)
-        return new Response(
-          "Você está offline e este recurso não está em cache.",
-          { status: 503, statusText: "Offline" }
-        );
-      });
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req).then((res) => {
+        // Cache só o que é same-origin
+        try {
+          const url = new URL(req.url);
+          if (url.origin === self.location.origin) {
+            const copy = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          }
+        } catch(e){}
+        return res;
+      }).catch(() => caches.match("./index.html"));
     })
   );
 });
